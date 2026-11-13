@@ -81,6 +81,25 @@ When this happens, such as after removing the controller's element from the docu
 
 Similarly, a disconnected target may be connected again at a later time. Stimulus will invoke its controller's `[name]TargetConnected()` method multiple times.
 
+## Permanent Elements
+
+Moving an element to another place in the document removes it and inserts it again, so its controllers are disconnected and then reconnected. To keep them connected instead, add the `data-stimulus-permanent` attribute to the element or to one of its ancestors:
+
+```html
+<div id="player" data-stimulus-permanent data-controller="player"></div>
+```
+
+A controller in a permanent element stays connected when its element is removed and put back synchronously, without awaiting anything in between, so that the element is in the document again when Stimulus processes the removal. Stimulus then calls neither `disconnect()` nor `connect()`, and the controller's own targets fire no callbacks. This is how a library that swaps the page around an element, such as Turbo with its permanent elements, can carry the element and its controllers' state over.
+
+Everything else is observed as usual:
+
+* The controller is disconnected when its element leaves the application's root element (the document, unless the application was started on another element) for good, is only put back later, or loses its identifier in the `data-controller` attribute.
+* The attribute counts where the element is when the removal is processed: an element moved out of its permanent ancestor is reconnected.
+* If a lifecycle callback of another controller moves the element again while Stimulus is still processing the move, the controller is disconnected and then reconnected. If the callback removes the element instead, the controller is disconnected.
+* Controllers outside the moved element that have targets inside it, or outlets on or inside it, receive the disconnected and connected callbacks for them.
+
+You can use a different attribute by setting `permanentAttribute` in the application's schema.
+
 ## Order and Timing
 
 Stimulus watches the page for changes asynchronously using the [DOM `MutationObserver` API](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver).

@@ -90,6 +90,9 @@ export class OutletObserver implements AttributeObserverDelegate, SelectorObserv
   }
 
   selectorMatchElement(element: Element, { outletName }: OutletObserverDetails) {
+    // The outlet properties search inside the document element, so it is not an outlet itself
+    if (element === document.documentElement) return false
+
     const selector = this.selector(outletName)
     const hasOutlet = this.hasOutlet(element, outletName)
     const hasOutletController = element.matches(`[${this.schema.controllerAttribute}~=${outletName}]`)
@@ -169,7 +172,7 @@ export class OutletObserver implements AttributeObserverDelegate, SelectorObserv
 
   private setupSelectorObserverForOutlet(outletName: string) {
     const selector = this.selector(outletName)
-    const selectorObserver = new SelectorObserver(document.body, selector!, this, { outletName })
+    const selectorObserver = new SelectorObserver(document.documentElement, selector!, this, { outletName })
 
     this.selectorObserverMap.set(outletName, selectorObserver)
 
