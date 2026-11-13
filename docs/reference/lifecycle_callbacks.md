@@ -95,7 +95,7 @@ Everything else is observed as usual:
 
 * The controller is disconnected when its element leaves the application's root element (the document, unless the application was started on another element) for good, is only put back later, or loses its identifier in the `data-controller` attribute.
 * The attribute counts where the element is when the removal is processed: an element moved out of its permanent ancestor is reconnected.
-* A controller is reconnected if a lifecycle callback of another controller moves or removes its element again while Stimulus is still processing the move.
+* If a lifecycle callback of another controller moves the element again while Stimulus is still processing the move, the controller is disconnected and then reconnected. If the callback removes the element instead, the controller is disconnected.
 * Controllers outside the moved element that have targets inside it, or outlets on or inside it, receive the disconnected and connected callbacks for them.
 
 You can use a different attribute by setting `permanentAttribute` in the application's schema.
